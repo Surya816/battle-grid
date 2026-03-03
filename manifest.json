@@ -3,7 +3,7 @@
   "name": "Battle Grid",
   "short_name": "BattleGrid",
   "description": "Real-time grid combat – PUBG meets Chess",
-  "start_url": "/battle-grid/index.html",
+  "start_url": "index.html",
   "scope": "/battle-grid/",
   "display": "fullscreen",
   "orientation": "portrait",
@@ -36,3 +36,4 @@
     }
   ]
 }
+
