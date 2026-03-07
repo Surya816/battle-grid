@@ -167,6 +167,13 @@
         fixVH();
         window.addEventListener('resize', fixVH);
         window.addEventListener('orientationchange', () => setTimeout(fixVH, 200));
+
+        // Register Service Worker for PWA (Installable App)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js').catch(err => console.log('SW setup failed', err));
+            });
+        }
     </script>
 </body>
 
