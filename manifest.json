@@ -6,7 +6,7 @@
   "start_url": "/battle-grid/index.html",
   "scope": "/battle-grid/",
   "display": "fullscreen",
-  "orientation": "portrait",
+  "orientation": "landscape",
   "background_color": "#050810",
   "theme_color": "#050810",
   "categories": [
