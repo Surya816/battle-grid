@@ -1,10 +1,16 @@
 const CACHE = 'battle-grid-v2';
 const ASSETS = [
-    '/battle-grid/',
-    '/battle-grid/new.html',
-    '/battle-grid/manifest.json',
-    '/battle-grid/icon-192.png',
-    '/battle-grid/icon-512.png'
+    './',
+    './game/index.html',
+    './game/style.css',
+    './game/game.js',
+    './game/ai.js',
+    './game/render.js',
+    './game/multiplayer.js',
+    './game/powers.js',
+    './manifest.json',
+    './icon-192.png',
+    './icon-512.png'
 ];
 self.addEventListener('install', e => e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
