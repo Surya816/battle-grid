@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+    <meta name="theme-color" content="#050810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <title>Battle Grid</title>
+    <!-- Firebase 10 compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+
+<body>
+    <div id="scanlines"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div class="phud">
+            <div class="pname p1c">YOU</div>
+            <div class="hpbg">
+                <div class="hpfill" id="p1bar" style="width:100%;background:linear-gradient(90deg,#00d4ff,#0088ff)">
+                </div>
+            </div>
+            <div class="hptxt" id="p1txt">5 HP</div>
+        </div>
+        <div id="zone-box">
+            <div id="zone-timer">--</div>
+            <div style="font-size:8px;color:#ff4444;letter-spacing:1px">STORM</div>
+        </div>
+        <div class="phud">
+            <div class="pname p2c">AI</div>
+            <div class="hpbg">
+                <div class="hpfill" id="p2bar" style="width:100%;background:linear-gradient(90deg,#ff4500,#cc2200)">
+                </div>
+            </div>
+            <div class="hptxt" id="p2txt">5 HP</div>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="canvasWrap">
+        <canvas id="C"></canvas>
+        <div id="ev"></div>
+        <div id="overlay">
+            <!-- ── MAIN MENU ── -->
+            <div id="main-menu">
+                <h2>BATTLE GRID</h2>
+                <p>1v1 tactical combat<br>Race for powers · Stones &amp; Knife!<br><br>
+                    <b>WASD</b> move · <b>Hold</b> THROW/KNIFE · <b>Q</b> melee
+                </p>
+                <div style="font-size:10px;color:#555;margin-bottom:4px">DIFFICULTY (vs AI)</div>
+                <div class="diff-row">
+                    <button class="dbtn" onclick="setDiff('easy')" id="deasy">Easy</button>
+                    <button class="dbtn sel" onclick="setDiff('medium')" id="dmed">Medium</button>
+                    <button class="dbtn" onclick="setDiff('hard')" id="dhard">Hard</button>
+                </div>
+                <button class="btn" onclick="startGame()">▶ PLAY vs AI</button>
+                <button class="btn" id="mpbtn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);margin-top:6px"
+                    onclick="showMPPanel()">🌐 Play Online 1v1</button>
+            </div>
+
+            <!-- ── MULTIPLAYER PANEL ── -->
+            <div id="mp-panel" style="display:none;flex-direction:column;align-items:center;gap:10px;width:100%">
+                <h2 style="color:#7c3aed;text-shadow:0 0 20px #7c3aed">ONLINE 1v1</h2>
+                <div id="mp-status" style="font-size:13px;color:#aaa;text-align:center;min-height:40px"></div>
+
+                <!-- Join form -->
+                <div id="mp-join-form" style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%">
+                    <button class="btn" style="background:linear-gradient(135deg,#059669,#047857)"
+                        onclick="createRoom()">
+                        ➕ Create Room
+                    </button>
+                    <div style="color:#444;font-size:11px">— or enter a code to join —</div>
+                    <div style="display:flex;gap:6px;width:100%;max-width:260px">
+                        <input id="mp-codeinput" placeholder="ROOM CODE" maxlength="4"
+                            style="flex:1;padding:12px;border-radius:8px;border:2px solid #333;background:#0d0d1f;color:#fff;font-size:18px;text-align:center;letter-spacing:4px;font-weight:bold;text-transform:uppercase;font-family:inherit">
+                        <button class="btn" style="padding:12px 16px" onclick="joinMPFromUI()">JOIN</button>
+                    </div>
+                </div>
+
+                <button class="dbtn" style="margin-top:4px"
+                    onclick="document.getElementById('mp-panel').style.display='none';document.getElementById('main-menu').style.display='flex'">
+                    ← Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Touch Controls -->
+    <div id="controls">
+        <!-- LEFT: Virtual joystick drag zone -->
+        <div id="jzone">
+            <div id="jlabel">drag to move</div>
+        </div>
+        <!-- RIGHT: Action buttons -->
+        <div class="right-controls">
+            <div class="fire-btn" ontouchstart="mp('atk',1)" ontouchend="mp('atk',0)">THROW</div>
+            <div class="fire-btn" ontouchstart="mp('knife',1)" ontouchend="mp('knife',0)"
+                style="background:linear-gradient(135deg,#ff4500,#cc2200);width:52px;height:52px;font-size:11px">KNIFE
+            </div>
+            <div class="pwr-row">
+                <div class="pwr-btn" id="pw0" ontouchstart="MP.enabled&&MP.role==='guest'?guestUsePwr(0):usePwr(0)">
+                    ---<div class="cd-bar"></div>
+                </div>
+                <div class="pwr-btn" id="pw1" ontouchstart="MP.enabled&&MP.role==='guest'?guestUsePwr(1):usePwr(1)">
+                    ---<div class="cd-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts (order matters!) -->
+    <script src="game.js"></script>
+    <script src="powers.js"></script>
+    <script src="ai.js"></script>
+    <script src="render.js"></script>
+    <script src="multiplayer.js"></script>
+    <script>
+        // Show/hide overlay sub-panels
+        const mainMenu = document.getElementById('main-menu');
+        const mpPanel = document.getElementById('mp-panel');
+        // Override showMPPanel to toggle panels within the overlay
+        const _origShowMP = window.showMPPanel;
+        window.showMPPanel = function () {
+            mainMenu.style.display = 'none';
+            mpPanel.style.display = 'flex';
+            document.getElementById('mp-status').textContent = 'Create a room or join your friend:';
+        };
+        // When overlay re-shows (game over), restore main menu
+        const ob = new MutationObserver(() => {
+            const ov = document.getElementById('overlay');
+            if (ov.style.display !== 'none') {
+                // Reset P2 label back to AI if not in MP mode
+                if (!MP.enabled) document.querySelector('.pname.p2c').textContent = 'AI';
+            }
+        });
+        ob.observe(document.getElementById('overlay'), { attributes: true });
+
+        // ── FULLSCREEN + SCREEN WAKE LOCK ──
+        document.addEventListener('touchstart', async function goFull() {
+            const el = document.documentElement;
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                try {
+                    if (el.requestFullscreen) await el.requestFullscreen();
+                    else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+                } catch (e) { }
+            }
+            if ('wakeLock' in navigator) {
+                try { await navigator.wakeLock.request('screen'); } catch (e) { }
+            }
+        }, { passive: true });
+
+        // iOS Safari 100vh fix
+        function fixVH() {
+            const h = window.innerHeight;
+            document.documentElement.style.setProperty('--vh', h * 0.01 + 'px');
+            document.documentElement.style.height = h + 'px';
+            document.body.style.height = h + 'px';
+        }
+        fixVH();
+        window.addEventListener('resize', fixVH);
+        window.addEventListener('orientationchange', () => setTimeout(fixVH, 200));
+    </script>
+</body>
+
+</html>

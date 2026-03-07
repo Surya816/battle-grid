@@ -1,0 +1,427 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none
+}
+
+html {
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    /* True full height on mobile — dvh accounts for browser chrome */
+    height: 100%;
+    height: 100dvh;
+    /* iOS Safari fallback */
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+    width: 100%;
+    /* Prevent rubber-band / bounce scroll on iOS */
+    position: fixed;
+    overscroll-behavior: none;
+}
+
+body {
+    background: #050810;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    /* Notch safe area padding for iPhone X+ */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* ── HUD ── */
+#hud {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px
+}
+
+.phud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px
+}
+
+.pname {
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px
+}
+
+.hpbg {
+    width: 90px;
+    height: 12px;
+    background: #1a1a2a;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #333
+}
+
+.hpfill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.12s
+}
+
+.hptxt {
+    font-size: 9px;
+    color: #888
+}
+
+#zone-box {
+    text-align: center
+}
+
+#zone-timer {
+    font-size: 22px;
+    font-weight: bold;
+    color: #ff4444;
+    text-shadow: 0 0 10px #ff4444
+}
+
+/* ── CANVAS ── */
+#canvasWrap {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+canvas {
+    display: block
+}
+
+/* ── OVERLAY ── */
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 5, 16, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    z-index: 10
+}
+
+#overlay h2 {
+    font-size: 24px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #00d4ff, #ff4500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text
+}
+
+#overlay p {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    line-height: 1.7
+}
+
+/* ── BUTTONS ── */
+.btn {
+    background: linear-gradient(135deg, #00d4ff, #0066bb);
+    color: #000;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 1px;
+    transition: transform 0.1s
+}
+
+.btn:active {
+    transform: scale(0.95)
+}
+
+.diff-row {
+    display: flex;
+    gap: 6px
+}
+
+.dbtn {
+    background: #0d0d1f;
+    border: 2px solid #222;
+    color: #888;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    transition: all 0.15s
+}
+
+.dbtn.sel {
+    border-color: #ff4500;
+    color: #ff4500;
+    background: #ff450011
+}
+
+/* ── CONTROLS ── */
+#controls {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 6px 8px
+}
+
+/* ── JOYSTICK ZONE ── */
+#jzone {
+    width: 156px;
+    height: 156px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    touch-action: none;
+    /* prevent scroll while dragging */
+    -webkit-tap-highlight-color: transparent;
+}
+
+#jlabel {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.18);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+}
+
+
+.right-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px
+}
+
+.fire-btn {
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: radial-gradient(circle, #ff6644, #aa2200);
+    box-shadow: 0 0 20px #ff440066;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.08s
+}
+
+.fire-btn:active {
+    transform: scale(0.88)
+}
+
+.pwr-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center
+}
+
+.pwr-btn {
+    background: #0d0d1f;
+    border: 2px solid #222;
+    border-radius: 8px;
+    color: #666;
+    padding: 9px 11px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    min-width: 52px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s
+}
+
+.pwr-btn:active {
+    background: #1a1a35;
+    color: #fff
+}
+
+.pwr-btn.ready {
+    border-color: #00d4ff44;
+    color: #aaa
+}
+
+.pwr-btn.on {
+    border-color: #00ff88;
+    color: #00ff88;
+    background: #00ff8811;
+    animation: pulse-on 0.6s infinite alternate
+}
+
+.pwr-btn.cd {
+    opacity: 0.35;
+    pointer-events: none
+}
+
+.pwr-btn .cd-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: #00d4ff;
+    transition: width 0.3s linear
+}
+
+@keyframes pulse-on {
+    from {
+        box-shadow: 0 0 4px #00ff8833
+    }
+
+    to {
+        box-shadow: 0 0 12px #00ff8866
+    }
+}
+
+/* ── MISC ── */
+#ev {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 5;
+    text-shadow: 0 0 15px currentColor
+}
+
+#ev.show {
+    opacity: 1
+}
+
+.p1c {
+    color: #00d4ff
+}
+
+.p2c {
+    color: #ff4500
+}
+
+#scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    z-index: 99
+}
+
+/* ── LANDSCAPE ── */
+@media (orientation: landscape) and (max-height: 600px) {
+    body {
+        flex-direction: row;
+        justify-content: center;
+        align-items: stretch;
+        padding: 5px 10px;
+    }
+
+    #hud {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        z-index: 5;
+        gap: 40px;
+        background: rgba(5, 8, 16, 0.85);
+        padding: 5px 20px;
+        border-radius: 0 0 16px 16px;
+        border: 1px solid #223;
+        border-top: none;
+    }
+
+    #canvasWrap {
+        flex: none;
+        width: auto;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        z-index: 2;
+    }
+
+    #controls {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        align-items: center;
+        padding: 0 40px;
+        max-width: none;
+        z-index: 4;
+    }
+
+    #controls>div {
+        pointer-events: auto;
+    }
+
+    #jzone {
+        width: 130px;
+        height: 130px;
+    }
+
+    .right-controls {
+        transform: scale(1.15);
+        transform-origin: right center;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 10px;
+    }
+
+    .pwr-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+    }
+}
